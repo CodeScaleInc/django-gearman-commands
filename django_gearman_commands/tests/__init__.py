@@ -1,12 +1,17 @@
 # -*- coding: utf-8 -*-
+
+import logging
+import pickle
+
 from django.core.management import call_command
 from django.conf import settings
 from django.test import TestCase
 from django.core.cache import cache
 from django_gearman_commands import GearmanServerInfo
-import logging
+
 
 log = logging.getLogger(__name__)
+
 
 class GearmanCommandsTest(TestCase):
 
@@ -40,7 +45,6 @@ class GearmanCommandsTest(TestCase):
         self.assertEqual(cache.get('footest'), 'DATA', 'Unexpected footest worker result (data string)')
         
     def test_worker_task_data_pickled(self):
-        import pickle
         # submit job
         call_command('gearman_submit_job', 'footest', pickle.dumps(u'DATA'))
         

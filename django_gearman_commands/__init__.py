@@ -37,7 +37,7 @@ class GearmanWorkerBaseCommand(BaseCommand):
     @property
     def task_name(self):
         """Override task_name property in worker to indicate what task should be registered in Gearman."""
-        raise NotImplementedError, 'task_name should be implemented in worker'
+        raise NotImplementedError('task_name should be implemented in worker')
 
     @property
     def exit_after_job(self):
@@ -56,7 +56,7 @@ class GearmanWorkerBaseCommand(BaseCommand):
         Override this in worker to perform job.
         
         """
-        raise NotImplementedError, 'do_job() should be implemented in worker'
+        raise NotImplementedError('do_job() should be implemented in worker')
     
     def handle(self, *args, **options):
         try:
@@ -65,7 +65,7 @@ class GearmanWorkerBaseCommand(BaseCommand):
             task_name = '{0}@{1}'.format(self.task_name, get_namespace()) if get_namespace() else self.task_name
             log.info('Registering gearman task: %s', self.task_name)
             worker.register_task(task_name, self._invoke_job)
-        except:
+        except Exception:
             log.exception('Problem with registering gearman task')
             raise
         
@@ -92,7 +92,7 @@ class GearmanWorkerBaseCommand(BaseCommand):
                 self.stdout.write('%s\n' % result)
 
             return 'OK'
-        except:
+        except Exception:
             log.exception('Error occured when invoking job, task: %s', self.task_name)
             raise
 
@@ -124,11 +124,10 @@ class GearmanServerInfo():
         # use prettytable if available, otherwise raw output
         try:
             from prettytable import PrettyTable
-            use_prettytable = True
         except ImportError:
-            use_prettytable = False
+            PrettyTable = None
 
-        if use_prettytable:
+        if PrettyTable is not None:
             # use PrettyTable for output
             # version
             table = PrettyTable(['Gearman Server Host', 'Gearman Server Version'])

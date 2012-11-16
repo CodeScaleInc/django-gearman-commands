@@ -1,11 +1,15 @@
 # -*- coding: utf-8 -*-
-from django.core.management.base import BaseCommand, CommandError
-from django.conf import settings
-import gearman
+
 import logging
+
+from django.core.management.base import BaseCommand
+
+import django_gearman_commands.settings
 from django_gearman_commands import GearmanServerInfo
 
+
 log = logging.getLogger(__name__)
+
 
 class Command(BaseCommand):
     """Pprint overview of Gearman server status and workers."""
@@ -14,7 +18,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         result = ''
-        for server in settings.GEARMAN_SERVERS:
+        for server in django_gearman_commands.settings.GEARMAN_SERVERS:
             server_info = GearmanServerInfo(server)
             result += server_info.get_server_info()
             

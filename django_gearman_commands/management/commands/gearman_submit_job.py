@@ -9,6 +9,7 @@ from django.core.management.base import BaseCommand, CommandError
 import django_gearman_commands.settings
 from django_gearman_commands import get_namespace
 
+
 log = logging.getLogger(__name__)
 
 
