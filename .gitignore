@@ -11,3 +11,4 @@ pip-log.txt*
 logs
 dist
 django_gearman_commands.egg-info
+.idea
