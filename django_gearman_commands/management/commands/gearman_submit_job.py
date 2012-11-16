@@ -33,7 +33,8 @@ class Command(BaseCommand):
             self.stdout.write('Submitting job: {0:s}, job data: {1:s}.\n'.format(task_name, job_data if job_data else '(empty)'))
 
             client = gearman.GearmanClient(django_gearman_commands.settings.GEARMAN_SERVERS)
-            result = client.submit_job(task_name, job_data, wait_until_complete=False, background=True)
+            result = client.submit_job(task_name, job_data, wait_until_complete=options.get('wait_unit_complete', False),
+                                       background=options.get('background', True))
             
             self.stdout.write('Job submission done, result: {0:s}.\n'.format(result))
         except:
