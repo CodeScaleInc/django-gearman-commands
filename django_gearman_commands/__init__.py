@@ -1,14 +1,21 @@
 # -*- coding: utf-8 -*-
+
+import time
+import logging
+from datetime import datetime
+
+import gearman
+
 from django.core.management.base import BaseCommand, CommandError
 from django.conf import settings
-from datetime import datetime
-import time
-import gearman
-import logging
+
+import django_gearman_commands.settings
 
 __version__ = '0.1'
 
+
 log = logging.getLogger(__name__)
+
 
 class HookedGearmanWorker(gearman.GearmanWorker):
     """GearmanWorker with hooks support."""
@@ -18,7 +25,8 @@ class HookedGearmanWorker(gearman.GearmanWorker):
         self.exit_after_job = exit_after_job
         
     def after_job(self):
-        return (not self.exit_after_job)
+        return not self.exit_after_job
+
     
 class GearmanWorkerBaseCommand(BaseCommand):
     """Base command for Gearman workers.
@@ -26,7 +34,6 @@ class GearmanWorkerBaseCommand(BaseCommand):
     Subclass this class in your gearman worker commands.
     
     """
-
     @property
     def task_name(self):
         """Override task_name property in worker to indicate what task should be registered in Gearman."""
@@ -53,9 +60,11 @@ class GearmanWorkerBaseCommand(BaseCommand):
     
     def handle(self, *args, **options):
         try:
-            worker = HookedGearmanWorker(exit_after_job=self.exit_after_job, host_list=settings.GEARMAN_SERVERS)
+            worker = HookedGearmanWorker(exit_after_job=self.exit_after_job,
+                                         host_list=django_gearman_commands.settings.GEARMAN_SERVERS)
+            task_name = '{0}@{1}'.format(self.task_name, get_namespace()) if get_namespace() else self.task_name
             log.info('Registering gearman task: %s', self.task_name)
-            worker.register_task(self.task_name, self._invoke_job)
+            worker.register_task(task_name, self._invoke_job)
         except:
             log.exception('Problem with registering gearman task')
             raise
@@ -149,3 +158,8 @@ class GearmanServerInfo():
             result += 'Workers:\n%s\n' % str(self.workers)
             
         return result
+
+
+def get_namespace():
+    """Namespace to suffix function on a mutialized gearman."""
+    return django_gearman_commands.settings.GEARMAN_CLIENT_NAMESPACE
