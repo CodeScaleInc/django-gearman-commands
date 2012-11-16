@@ -78,22 +78,22 @@ class GearmanWorkerBaseCommand(BaseCommand):
         
         """
         try:
-            # represent default job data '' as None
+            # Represent default job data '' as None.
             job_data = job.data if job.data else None
-            self.stdout.write('Invoking gearman job, task: %s.\n' % self.task_name)
+            self.stdout.write('Invoking gearman job, task: {0:s}.\n'.format(self.task_name))
 
             result = self.do_job(job_data)
 
             log.info('Job finished, task: %s', self.task_name)
-            self.stdout.write('Job finished, task: %s\n' % self.task_name)
+            self.stdout.write('Job finished, task: {0:s}\n'.format(self.task_name))
             
             if result is not None:
                 log.info(result)
-                self.stdout.write('%s\n' % result)
+                self.stdout.write('{0:s}\n'.format(result))
 
             return 'OK'
         except Exception:
-            log.exception('Error occured when invoking job, task: %s', self.task_name)
+            log.exception('Error occurred when invoking job, task: %s', self.task_name)
             raise
 
 
@@ -114,32 +114,32 @@ class GearmanServerInfo():
         """Read Gearman server info - status, workers and and version."""
         result = ''
 
-        # read server status info
+        # Read server status info.
         client = gearman.GearmanAdminClient([self.host])
         
         self.server_version = client.get_version()
         self.tasks = client.get_status()
         self.workers = client.get_workers()
 
-        # use prettytable if available, otherwise raw output
+        # Use prettytable if available, otherwise raw output.
         try:
             from prettytable import PrettyTable
         except ImportError:
             PrettyTable = None
 
         if PrettyTable is not None:
-            # use PrettyTable for output
+            # Use PrettyTable for output.
             # version
             table = PrettyTable(['Gearman Server Host', 'Gearman Server Version'])
             table.add_row([self.host, self.server_version])
-            result += '%s.\n\n' % str(table)
+            result += '{0:s}.\n\n'.format(table)
 
             # tasks
             table = PrettyTable(['Task Name', 'Total Workers', 'Running Jobs', 'Queued Jobs'])
             for r in self.tasks:
                 table.add_row([r['task'], r['workers'], r['running'], r['queued']])
                 
-            result += '%s.\n\n' % str(table)
+            result += '{0:s}.\n\n'.format(table)
 
             # workers
             table = PrettyTable(['Worker IP', 'Registered Tasks', 'Client ID', 'File Descriptor'])
@@ -147,14 +147,14 @@ class GearmanServerInfo():
                 if r['tasks']: # ignore workers with no registered task
                     table.add_row([r['ip'], ','.join(r['tasks']), r['client_id'], r['file_descriptor']])
 
-            result += '%s.\n\n' % str(table)
+            result += '{0:s}.\n\n'.format(table)
 
         else:
             # raw output without PrettyTable
-            result += 'Gearman Server Host:%s\n' % self.host
-            result += 'Gearman Server Version:%s.\n' % self.server_version
-            result += 'Tasks:\n%s\n' % str(self.tasks)
-            result += 'Workers:\n%s\n' % str(self.workers)
+            result += 'Gearman Server Host:{0:s}\n'.format(self.host)
+            result += 'Gearman Server Version:{0:s}.\n'.format(self.server_version)
+            result += 'Tasks:\n{0:s}\n'.format(self.tasks)
+            result += 'Workers:\n{0:s}\n'.format(self.workers)
             
         return result
 
