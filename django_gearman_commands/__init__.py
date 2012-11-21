@@ -6,6 +6,7 @@ from datetime import datetime
 
 import gearman
 
+from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 from django.conf import settings
 
@@ -162,3 +163,8 @@ class GearmanServerInfo():
 def get_namespace():
     """Namespace to suffix function on a mutialized gearman."""
     return django_gearman_commands.settings.GEARMAN_CLIENT_NAMESPACE
+
+
+def submit_job(task_name, data='', **options):
+    """Shortcut util for submitting job in standard way."""
+    return call_command('gearman_submit_job', task_name, data, **options)
