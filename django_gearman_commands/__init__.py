@@ -85,11 +85,10 @@ class GearmanWorkerBaseCommand(BaseCommand):
 
             result = self.do_job(job_data)
 
-            log.info('Job finished, task: %s', self.task_name)
+            log.info('Job finished, task: %s, result %s', self.task_name, result)
             self.stdout.write('Job finished, task: {0:s}\n'.format(self.task_name))
             
             if result is not None:
-                log.info(result)
                 self.stdout.write('{0:s}\n'.format(result))
 
             return 'OK'
