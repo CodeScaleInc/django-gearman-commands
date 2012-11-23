@@ -147,7 +147,7 @@ class GearmanServerInfo():
                 if r['tasks']: # ignore workers with no registered task
                     table.add_row([r['ip'], ','.join(r['tasks']), r['client_id'], r['file_descriptor']])
 
-            result += '{0:s}.\n\n'.format(table)
+            result += '{0}.\n\n'.format(table)
 
         else:
             # raw output without PrettyTable
