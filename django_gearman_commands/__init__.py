@@ -89,7 +89,7 @@ class GearmanWorkerBaseCommand(BaseCommand):
             self.stdout.write('Job finished, task: {0:s}\n'.format(self.task_name))
             
             if result is not None:
-                self.stdout.write('{0:s}\n'.format(result))
+                self.stdout.write('{0}\n'.format(result))
 
             return 'OK'
         except Exception:
@@ -147,7 +147,7 @@ class GearmanServerInfo():
                 if r['tasks']: # ignore workers with no registered task
                     table.add_row([r['ip'], ','.join(r['tasks']), r['client_id'], r['file_descriptor']])
 
-            result += '{0}.\n\n'.format(table)
+            result += '{0:s}.\n\n'.format(table)
 
         else:
             # raw output without PrettyTable
