@@ -1,17 +1,22 @@
 # -*- coding: utf-8 -*-
+
+import logging
+import pickle
+
 from django.core.management import call_command
-from django.conf import settings
 from django.test import TestCase
 from django.core.cache import cache
 from django_gearman_commands import GearmanServerInfo
-import logging
+
+import django_gearman_commands.settings
 
 log = logging.getLogger(__name__)
+
 
 class GearmanCommandsTest(TestCase):
 
     def test_server_info(self):
-        server_info = GearmanServerInfo(settings.GEARMAN_SERVERS[0])
+        server_info = GearmanServerInfo(django_gearman_commands.settings.GEARMAN_SERVERS[0])
         server_info.get_server_info()
         self.assertTrue(server_info.server_version.startswith('OK'), 'Unexpected server version string')
         self.assertTrue(type(server_info.tasks) is tuple, 'Unexpected server tasks type')
@@ -40,7 +45,6 @@ class GearmanCommandsTest(TestCase):
         self.assertEqual(cache.get('footest'), 'DATA', 'Unexpected footest worker result (data string)')
         
     def test_worker_task_data_pickled(self):
-        import pickle
         # submit job
         call_command('gearman_submit_job', 'footest', pickle.dumps(u'DATA'))
         

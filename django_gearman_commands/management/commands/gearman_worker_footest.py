@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
+
 from django.core.cache import cache
-import django_gearman_commands
+
+from django_gearman_commands import GearmanWorkerBaseCommand
 
 
-class Command(django_gearman_commands.GearmanWorkerBaseCommand):
+class Command(GearmanWorkerBaseCommand):
     """Gearman worker performing 'footest' job."""
     
     @property

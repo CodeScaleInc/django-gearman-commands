@@ -166,7 +166,7 @@ As you see, you need to do three things:
 * create Command class inheriting from django_gearman_commands.GearmanWorkerBaseCommand class
 * override task_name property and do_job() method
 
-**task_name** is unique identification of task, which your worker is supposed to do. Submitting jobs is done via sending task name and optional job parameters.
+**task_name** is unique identification of task, which your worker is supposed to do. Submitting jobs is done via sending task name and optional job parameters. Task name can be also easily name-spaced.
 
 **do_job()** is method which will be invoked when job is submitted. If job was submitted with arguments, 'job_data' is not None.
 
@@ -343,5 +343,6 @@ Authors and Contributors
 Author: Jozef Ševčík, sevcik@codescale.net
 
 Contributors:
-None. Be the first ! :)
+
+ * Vladimír Gorej (gorej@codescale.net)
 
