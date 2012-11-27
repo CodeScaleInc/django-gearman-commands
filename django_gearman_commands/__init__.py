@@ -8,7 +8,6 @@ import gearman
 
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
-from django.conf import settings
 
 import django_gearman_commands.settings
 
