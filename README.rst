@@ -211,6 +211,18 @@ Django can call custom management commands programatically, via django.core.mana
 By using job submission wrapper Command 'gearman_submit_job',
 you are now able submit jobs from console, cron and your app with same API.
 
+Task namespaces
+---------------
+
+Sometimes it can be useful to distinguish between jobs submitted with same task name from several applications connected
+to same gearman servers. For example, you may have several instances of same django project deployed for individual
+clients.
+In that case, you can add GEARMAN_CLIENT_NAMESPACE to your django settings to uniquely identify tasks
+submitted by project::
+
+ GEARMAN_CLIENT_NAMESPACE = 'MyCustomer1'
+
+
 Gearman server info
 -------------------
 
