@@ -1,5 +1,4 @@
 Django==1.4
-distribute==0.6.19
 -e git+https://github.com/Yelp/python-gearman.git@2ed9d88941e31e3358a0b80787254d0c2cfaa78a#egg=gearman-dev
 prettytable==0.5
 wsgiref==0.1.2
