@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from setuptools import setup, find_packages
 import os
-import django_gearman_commands
 
 # Utility function to read the README file.
 # Used for the long_description. It's nice, because now 1) we have a top level
@@ -13,7 +12,7 @@ def read(fname):
 
 setup(
     name='django-gearman-commands',
-    version=django_gearman_commands.__version__,
+    version='0.1',
     description='Django management commands for working with Gearman job server from Django framework',
     long_description=read('README.rst'),
     author=u'Jozef Ševčík',
