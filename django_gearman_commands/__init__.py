@@ -11,7 +11,7 @@ from django.core.management.base import BaseCommand, CommandError
 
 import django_gearman_commands.settings
 
-__version__ = '0.1'
+__version__ = '0.2'
 
 
 log = logging.getLogger(__name__)

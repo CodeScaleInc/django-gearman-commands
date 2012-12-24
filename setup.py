@@ -12,7 +12,7 @@ def read(fname):
 
 setup(
     name='django-gearman-commands',
-    version='0.1',
+    version='0.2',
     description='Django management commands for working with Gearman job server from Django framework',
     long_description=read('README.rst'),
     author=u'Jozef Ševčík',
