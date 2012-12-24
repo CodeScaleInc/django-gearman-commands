@@ -189,6 +189,7 @@ You can submit first job easily with 'gearman_submit_job' commands::
  Job submission done, result: <GearmanJobRequest task='data_import', unique='8e610a031cef8aaf50c30f451d77808d', priority=None, background=True, state='CREATED', timed_out=False>.
 
 By default, jobs are submitted in background and 'gearman_submit_job' does not wait for job to finish.
+You can override this with '--foreground' CLI option. See './manage.py gearman_submit_job --help'.
 If you did everything right, your worker method 'your_code_performing_job_logic()' should be now running in background.
 
 This method is fine if you want to run job manually or from cron.
