@@ -19,8 +19,8 @@ class GearmanCommandsTest(TestCase):
         server_info = GearmanServerInfo(django_gearman_commands.settings.GEARMAN_SERVERS[0])
         server_info.get_server_info()
         self.assertTrue(server_info.server_version.startswith('OK'), 'Unexpected server version string')
-        self.assertTrue(type(server_info.tasks) is tuple, 'Unexpected server tasks type')
-        
+        self.assertTrue(type(server_info.tasks) is list, 'Unexpected server tasks type')
+
         # verify command is callable
         overview = call_command('gearman_server_info')
     

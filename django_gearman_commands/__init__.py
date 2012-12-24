@@ -120,6 +120,12 @@ class GearmanServerInfo():
         self.tasks = client.get_status()
         self.workers = client.get_workers()
 
+        # sort tasks by task name
+        self.tasks = sorted(self.tasks, key=lambda item: item['task'])
+
+        # sort registered workers by task name
+        self.workers = sorted(self.workers, key=lambda item: item['tasks'])
+
         # Use prettytable if available, otherwise raw output.
         try:
             from prettytable import PrettyTable
