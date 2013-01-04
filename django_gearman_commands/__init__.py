@@ -108,6 +108,7 @@ class GearmanServerInfo():
         self.server_version = None
         self.tasks = None
         self.workers = None
+        self.ping_time = None
 
     def get_server_info(self):
         """Read Gearman server info - status, workers and and version."""
@@ -119,6 +120,8 @@ class GearmanServerInfo():
         self.server_version = client.get_version()
         self.tasks = client.get_status()
         self.workers = client.get_workers()
+        self.ping_time = client.ping_server()
+        self.ping_time_str = '{0:0.016f}'.format(self.ping_time)
 
         # sort tasks by task name
         self.tasks = sorted(self.tasks, key=lambda item: item['task'])
@@ -134,9 +137,9 @@ class GearmanServerInfo():
 
         if PrettyTable is not None:
             # Use PrettyTable for output.
-            # version
-            table = PrettyTable(['Gearman Server Host', 'Gearman Server Version'])
-            table.add_row([self.host, self.server_version])
+            # server
+            table = PrettyTable(['Gearman Server Host', 'Gearman Server Version', 'Ping Response Time'])
+            table.add_row([self.host, self.server_version, self.ping_time_str])
             result += '{0:s}.\n\n'.format(table)
 
             # tasks
@@ -158,6 +161,7 @@ class GearmanServerInfo():
             # raw output without PrettyTable
             result += 'Gearman Server Host:{0:s}\n'.format(self.host)
             result += 'Gearman Server Version:{0:s}.\n'.format(self.server_version)
+            result += 'Gearman Server Ping Response Time:{0:s}.\n'.format(self.ping_time_str)
             result += 'Tasks:\n{0:s}\n'.format(self.tasks)
             result += 'Workers:\n{0:s}\n'.format(self.workers)
             
