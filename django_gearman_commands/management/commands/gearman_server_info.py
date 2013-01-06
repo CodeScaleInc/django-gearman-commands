@@ -14,14 +14,15 @@ log = logging.getLogger(__name__)
 class Command(BaseCommand):
     """Pprint overview of Gearman server status and workers."""
 
+    args = '[task_filter]'
     help = 'Print overview of Gearman server status and workers.'
 
     def handle(self, *args, **options):
         result = ''
 
         task_filter = ''
-        if len(args) > 1:
-            task_filter = args[1]
+        if len(args) > 0:
+            task_filter = args[0]
 
         for server in django_gearman_commands.settings.GEARMAN_SERVERS:
             server_info = GearmanServerInfo(server)
