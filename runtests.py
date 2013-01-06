@@ -32,7 +32,7 @@ settings.configure(
     
     # tests dependency - run gearman server on localhost on default port
     GEARMAN_SERVERS=[
-        '127.0.0.1:4730'
+        'localhost:4730'
         ],
     
     # LocMemCache used as a verification storage for tests
@@ -42,6 +42,8 @@ settings.configure(
             'LOCATION': 'django-gearman-commands-tests'
             }
         },
+
+    GEARMAN_CLIENT_NAMESPACE = 'django-gearman-commands-tests'
     )
 
 # Start the test suite now that the settings are configured.

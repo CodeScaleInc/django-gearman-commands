@@ -12,3 +12,4 @@ logs
 dist
 django_gearman_commands.egg-info
 .idea
+atlassian-ide-plugin.xml

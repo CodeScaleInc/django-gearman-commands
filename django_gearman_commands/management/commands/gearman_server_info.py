@@ -18,8 +18,13 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         result = ''
+
+        task_filter = ''
+        if len(args) > 1:
+            task_filter = args[1]
+
         for server in django_gearman_commands.settings.GEARMAN_SERVERS:
             server_info = GearmanServerInfo(server)
-            result += server_info.get_server_info()
-            
+            result += server_info.get_server_info(task_filter)
+
         self.stdout.write(result)

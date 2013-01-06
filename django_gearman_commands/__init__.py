@@ -1,21 +1,14 @@
 # -*- coding: utf-8 -*-
 
-import time
 import logging
-from datetime import datetime
-
 import gearman
-
 from django.core.management import call_command
-from django.core.management.base import BaseCommand, CommandError
-
+from django.core.management.base import BaseCommand
 import django_gearman_commands.settings
 
 __version__ = '0.2'
 
-
 log = logging.getLogger(__name__)
-
 
 class HookedGearmanWorker(gearman.GearmanWorker):
     """GearmanWorker with hooks support."""
@@ -109,8 +102,9 @@ class GearmanServerInfo():
         self.tasks = None
         self.workers = None
         self.ping_time = None
+        self.ping_time_str = None
 
-    def get_server_info(self):
+    def get_server_info(self, task_filter=None):
         """Read Gearman server info - status, workers and and version."""
         result = ''
 
@@ -122,6 +116,14 @@ class GearmanServerInfo():
         self.workers = client.get_workers()
         self.ping_time = client.ping_server()
         self.ping_time_str = '{0:0.016f}'.format(self.ping_time)
+
+        # if task_filter is set, filter list of tasks and workers by regex pattern task_filter
+        if task_filter:
+            # filter tasks
+            self.tasks = [item for item in self.tasks if task_filter in item['task']]
+
+            # filter workers by registered task name
+            self.workers = [item for item in self.workers if item['tasks'] and task_filter in [t for t in item['tasks']]]
 
         # sort tasks by task name
         self.tasks = sorted(self.tasks, key=lambda item: item['task'])

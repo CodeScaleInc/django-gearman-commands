@@ -231,11 +231,11 @@ gearman_server_info outputs current status of Gearman servers.
 If you installed prettytable dependency, here is how output looks like::
 
  $ ./manage.py gearman_server_info
- +---------------------+------------------------+
- | Gearman Server Host | Gearman Server Version |
- +---------------------+------------------------+
- |    127.0.0.1:4730   |        OK 0.29         |
- +---------------------+------------------------+.
+ +---------------------+------------------------+--------------------+
+ | Gearman Server Host | Gearman Server Version | Ping Response Time |
+ +---------------------+------------------------+--------------------+
+ |    127.0.0.1:4730   |        OK 1.1.3        | 0.0006051063537598 |
+ +---------------------+------------------------+--------------------+.
 
  +---------------+---------------+--------------+-------------+
  |   Task Name   | Total Workers | Running Jobs | Queued Jobs |
@@ -250,6 +250,28 @@ If you installed prettytable dependency, here is how output looks like::
  +-----------+------------------+-----------+-----------------+
  | 127.0.0.1 |   data_unlock    |     -     |        35       |
  | 127.0.0.1 |   data_import    |     -     |        36       |
+ | 127.0.0.1 |  cache_cleanup   |     -     |        37       |
+ +-----------+------------------+-----------+-----------------+
+
+
+If you have a lot of workers, you can filter output using command argument (case-sensitive)::
+
+ $ ./manage.py gearman_server_info cleanup
+ +---------------------+------------------------+--------------------+
+ | Gearman Server Host | Gearman Server Version | Ping Response Time |
+ +---------------------+------------------------+--------------------+
+ |    127.0.0.1:4730   |        OK 1.1.3        | 0.0006871223449707 |
+ +---------------------+------------------------+--------------------+.
+
+ +---------------+---------------+--------------+-------------+
+ |   Task Name   | Total Workers | Running Jobs | Queued Jobs |
+ +---------------+---------------+--------------+-------------+
+ | cache_cleanup |       1       |      0       |      0      |
+ +---------------+---------------+--------------+-------------+.
+
+ +-----------+------------------+-----------+-----------------+
+ | Worker IP | Registered Tasks | Client ID | File Descriptor |
+ +-----------+------------------+-----------+-----------------+
  | 127.0.0.1 |  cache_cleanup   |     -     |        37       |
  +-----------+------------------+-----------+-----------------+
 

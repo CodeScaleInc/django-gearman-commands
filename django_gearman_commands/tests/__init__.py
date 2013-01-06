@@ -2,7 +2,6 @@
 
 import logging
 import pickle
-
 from django.core.management import call_command
 from django.test import TestCase
 from django.core.cache import cache
@@ -23,7 +22,22 @@ class GearmanCommandsTest(TestCase):
 
         # verify command is callable
         overview = call_command('gearman_server_info')
-    
+
+    def test_server_info_task_filter(self):
+        # submit job to queue so we have something shown up in get_server_info()
+        call_command('gearman_submit_job', 'footest')
+
+        server_info = GearmanServerInfo(django_gearman_commands.settings.GEARMAN_SERVERS[0])
+
+        server_info.get_server_info("footest")
+        self.assertTrue(len(server_info.tasks) > 0, 'Unexpected server_info.tasks')
+
+        server_info.get_server_info("NON_EXISTING!!")
+        self.assertTrue(len(server_info.tasks) == 0, 'Unexpected server_info.tasks')
+
+        # let the worker process the job
+        call_command('gearman_worker_footest')
+
     def test_worker_simple(self):
         # submit job
         call_command('gearman_submit_job', 'footest')
