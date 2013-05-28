@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 
 import logging
+
 import gearman
+
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
+
 import django_gearman_commands.settings
 
 __version__ = '0.2'
@@ -176,5 +179,14 @@ def get_namespace():
 
 
 def submit_job(task_name, data='', **options):
-    """Shortcut util for submitting job in standard way."""
-    return call_command('gearman_submit_job', task_name, data, **options)
+    """Shortcut util for submitting job in standard way.
+
+    We will revert the default behaviour of GermanClient.submit_job, so that
+    job are executed in background by default and client doesn't wait for task completion.
+
+    """
+    background = options.pop('background', True)
+    wait_until_complete = options.pop('wait_until_complete', False)
+    client = gearman.GearmanClient(django_gearman_commands.settings.GEARMAN_SERVERS)
+    return client.submit_job(task_name, data=data, background=background, wait_until_complete=wait_until_complete,
+                             **options)
