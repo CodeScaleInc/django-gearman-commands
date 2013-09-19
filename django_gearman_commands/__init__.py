@@ -68,17 +68,10 @@ class GearmanWorkerBaseCommand(BaseCommand):
         worker.work()
 
     def _invoke_job(self, worker, job):
-        """Invoke gearman job.
-        
-        Honestly, wrapper for do_job().
-        
-        """
+        """Invoke gearman job."""
         try:
-            # Represent default job data '' as None.
-            job_data = job.data if job.data else None
             self.stdout.write('Invoking gearman job, task: {0:s}.\n'.format(self.task_name))
-
-            result = self.do_job(job_data)
+            result = self.do_job(job.data if job.data else None)
 
             log.info('Job finished, task: %s, result %s', self.task_name, result)
             self.stdout.write('Job finished, task: {0:s}\n'.format(self.task_name))
@@ -86,7 +79,7 @@ class GearmanWorkerBaseCommand(BaseCommand):
             if result is not None:
                 self.stdout.write('{0}\n'.format(result))
 
-            return 'OK'
+            return 'OK' if not isinstance(result, basestring) else result
         except Exception:
             log.exception('Error occurred when invoking job, task: %s', self.task_name)
             raise
