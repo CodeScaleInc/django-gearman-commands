@@ -181,5 +181,7 @@ def submit_job(task_name, data='', **options):
     background = options.pop('background', True)
     wait_until_complete = options.pop('wait_until_complete', False)
     client = gearman.GearmanClient(django_gearman_commands.settings.GEARMAN_SERVERS)
+    task_name = '{0}@{1}'.format(task_name, get_namespace()) if get_namespace() else task_name
+
     return client.submit_job(task_name, data=data, background=background, wait_until_complete=wait_until_complete,
                              **options)
