@@ -171,7 +171,7 @@ def get_namespace():
     return django_gearman_commands.settings.GEARMAN_CLIENT_NAMESPACE
 
 
-def submit_job(task_name, data='', **options):
+def submit_job(task_name, data='', client=None, **options):
     """Shortcut util for submitting job in standard way.
 
     We will revert the default behaviour of GermanClient.submit_job, so that
@@ -180,7 +180,7 @@ def submit_job(task_name, data='', **options):
     """
     background = options.pop('background', True)
     wait_until_complete = options.pop('wait_until_complete', False)
-    client = gearman.GearmanClient(django_gearman_commands.settings.GEARMAN_SERVERS)
+    client = client or gearman.GearmanClient(django_gearman_commands.settings.GEARMAN_SERVERS)
     task_name = '{0}@{1}'.format(task_name, get_namespace()) if get_namespace() else task_name
 
     return client.submit_job(task_name, data=data, background=background, wait_until_complete=wait_until_complete,
