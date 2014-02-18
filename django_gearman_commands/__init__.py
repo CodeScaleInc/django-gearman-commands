@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
-
+import sys
+import time
 import logging
+import multiprocessing
 
 import gearman
-
-from django.core.management import call_command
 from django.core.management.base import BaseCommand
 
-import django_gearman_commands.settings
+import django_gearman_commands.settings as dgc_settings
 
-__version__ = '0.2'
+__version__ = '0.5.0'
 
 
 log = logging.getLogger(__name__)
@@ -24,6 +24,52 @@ class HookedGearmanWorker(gearman.GearmanWorker):
 
     def after_job(self):
         return not self.exit_after_job
+
+
+class HaltIfInactiveWorker(HookedGearmanWorker):
+    @staticmethod
+    def stopwatch(seconds=dgc_settings.WORKER_HALT_TIMEOUT_IN_SECONDS):
+        for i in range(seconds):
+            time.sleep(1)
+        sys.exit(1)
+
+    def start_watch(self):
+        self.watch = multiprocessing.Process(target=self.stopwatch, name='Worker timer')
+        self.watch.start()
+
+    def work(self, poll_timeout=1):
+        """Loop indefinitely, complete tasks from all connections."""
+        continue_working = True
+        worker_connections = []
+        had_job = []
+
+        def continue_while_connections_alive(any_activity):
+            if had_job and not self.has_job_lock():
+                self.watch.terminate()
+                del self.watch
+                self.start_watch()
+
+                del had_job[:]
+                return self.after_poll(any_activity) and self.after_job()
+
+            del had_job[:]
+            if self.has_job_lock():
+                had_job.append(True)
+            elif self.watch.exitcode:
+                return False
+
+            return self.after_poll(any_activity)
+
+        self.start_watch()
+
+        # Shuffle our connections after the poll timeout
+        while continue_working and not self.watch.exitcode:
+            worker_connections = self.establish_worker_connections()
+            continue_working = self.poll_connections_until_stopped(worker_connections, continue_while_connections_alive, timeout=poll_timeout)
+
+        # If we were kicked out of the worker loop, we should shutdown all our connections
+        for current_connection in worker_connections:
+            current_connection.close()
 
 
 class GearmanWorkerBaseCommand(BaseCommand):
@@ -61,7 +107,7 @@ class GearmanWorkerBaseCommand(BaseCommand):
     def handle(self, *args, **options):
         try:
             worker = self.worker_class(exit_after_job=self.exit_after_job,
-                                       host_list=django_gearman_commands.settings.GEARMAN_SERVERS)
+                                       host_list=dgc_settings.GEARMAN_SERVERS)
             task_name = '{0}@{1}'.format(self.task_name, get_namespace()) if get_namespace() else self.task_name
             log.info('Registering gearman task: %s', self.task_name)
             worker.register_task(task_name, self._invoke_job)
@@ -172,7 +218,7 @@ class GearmanServerInfo():
 
 def get_namespace():
     """Namespace to suffix function on a mutialized gearman."""
-    return django_gearman_commands.settings.GEARMAN_CLIENT_NAMESPACE
+    return dgc_settings.GEARMAN_CLIENT_NAMESPACE
 
 
 def submit_job(task_name, data='', client=None, **options):
@@ -184,7 +230,7 @@ def submit_job(task_name, data='', client=None, **options):
     """
     background = options.pop('background', True)
     wait_until_complete = options.pop('wait_until_complete', False)
-    client = client or gearman.GearmanClient(django_gearman_commands.settings.GEARMAN_SERVERS)
+    client = client or gearman.GearmanClient(dgc_settings.GEARMAN_SERVERS)
     task_name = '{0}@{1}'.format(task_name, get_namespace()) if get_namespace() else task_name
 
     return client.submit_job(task_name, data=data, background=background, wait_until_complete=wait_until_complete,
