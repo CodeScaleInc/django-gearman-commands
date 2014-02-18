@@ -15,21 +15,23 @@ log = logging.getLogger(__name__)
 
 class HookedGearmanWorker(gearman.GearmanWorker):
     """GearmanWorker with hooks support."""
-    
+
     def __init__(self, exit_after_job, host_list=None):
         super(HookedGearmanWorker, self).__init__(host_list=host_list)
         self.exit_after_job = exit_after_job
-        
+
     def after_job(self):
         return not self.exit_after_job
 
-    
+
 class GearmanWorkerBaseCommand(BaseCommand):
     """Base command for Gearman workers.
 
     Subclass this class in your gearman worker commands.
-    
+
     """
+    worker_class = HookedGearmanWorker
+
     @property
     def task_name(self):
         """Override task_name property in worker to indicate what task should be registered in Gearman."""
@@ -48,23 +50,23 @@ class GearmanWorkerBaseCommand(BaseCommand):
 
     def do_job(self, job_data):
         """Gearman job execution logic.
-        
+
         Override this in worker to perform job.
-        
+
         """
         raise NotImplementedError('do_job() should be implemented in worker')
-    
+
     def handle(self, *args, **options):
         try:
-            worker = HookedGearmanWorker(exit_after_job=self.exit_after_job,
-                                         host_list=django_gearman_commands.settings.GEARMAN_SERVERS)
+            worker = self.worker_class(exit_after_job=self.exit_after_job,
+                                       host_list=django_gearman_commands.settings.GEARMAN_SERVERS)
             task_name = '{0}@{1}'.format(self.task_name, get_namespace()) if get_namespace() else self.task_name
             log.info('Registering gearman task: %s', self.task_name)
             worker.register_task(task_name, self._invoke_job)
         except Exception:
             log.exception('Problem with registering gearman task')
             raise
-        
+
         worker.work()
 
     def _invoke_job(self, worker, job):
@@ -75,7 +77,7 @@ class GearmanWorkerBaseCommand(BaseCommand):
 
             log.info('Job finished, task: %s, result %s', self.task_name, result)
             self.stdout.write('Job finished, task: {0:s}\n'.format(self.task_name))
-            
+
             if result is not None:
                 self.stdout.write('{0}\n'.format(result))
 
@@ -106,7 +108,7 @@ class GearmanServerInfo():
 
         # Read server status info.
         client = gearman.GearmanAdminClient([self.host])
-        
+
         self.server_version = client.get_version()
         self.tasks = client.get_status()
         self.workers = client.get_workers()
@@ -144,7 +146,7 @@ class GearmanServerInfo():
             table = PrettyTable(['Task Name', 'Total Workers', 'Running Jobs', 'Queued Jobs'])
             for r in self.tasks:
                 table.add_row([r['task'], r['workers'], r['running'], r['queued']])
-                
+
             result += '{0:s}.\n\n'.format(table)
 
             # workers
@@ -162,7 +164,7 @@ class GearmanServerInfo():
             result += 'Gearman Server Ping Response Time:{0:s}.\n'.format(self.ping_time_str)
             result += 'Tasks:\n{0:s}\n'.format(self.tasks)
             result += 'Workers:\n{0:s}\n'.format(self.workers)
-            
+
         return result
 
 
