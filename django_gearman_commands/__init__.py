@@ -11,7 +11,9 @@ import django_gearman_commands.settings
 
 __version__ = '0.2'
 
+
 log = logging.getLogger(__name__)
+
 
 class HookedGearmanWorker(gearman.GearmanWorker):
     """GearmanWorker with hooks support."""

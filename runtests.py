@@ -21,30 +21,30 @@ settings.configure(
     
     INSTALLED_APPS=[
         "django_gearman_commands",
-        ],
+    ],
     
     DATABASES={
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
             "NAME": ":memory:",
-            }
-        },
+        }
+    },
     
     # tests dependency - run gearman server on localhost on default port
     GEARMAN_SERVERS=[
         'localhost:4730'
-        ],
+    ],
     
     # LocMemCache used as a verification storage for tests
-    CACHES = {
+    CACHES={
         'default': {
             'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
             'LOCATION': 'django-gearman-commands-tests'
-            }
-        },
+        }
+    },
 
-    GEARMAN_CLIENT_NAMESPACE = 'django-gearman-commands-tests'
-    )
+    GEARMAN_CLIENT_NAMESPACE='django-gearman-commands-tests'
+)
 
 # Start the test suite now that the settings are configured.
 from django.core.management import call_command
