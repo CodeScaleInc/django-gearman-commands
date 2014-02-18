@@ -9,8 +9,6 @@ from django.core.management.base import BaseCommand
 
 import django_gearman_commands.settings as dgc_settings
 
-__version__ = '0.5.0'
-
 
 log = logging.getLogger(__name__)
 
