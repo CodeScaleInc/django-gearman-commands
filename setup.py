@@ -15,7 +15,7 @@ def read(fname):
 
 setup(
     name='django-gearman-commands',
-    version='0.5.0',
+    version='0.6.0',
     description='Django management commands for working with Gearman job server from Django framework',
     long_description=read('README.rst'),
     author=u'Jozef Ševčík',
