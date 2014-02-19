@@ -58,16 +58,18 @@ class GearmanWorkerBaseCommand(BaseCommand):
 
     def handle(self, *args, **options):
         try:
-            worker = self.worker_class(exit_after_job=self.exit_after_job,
-                                       host_list=django_gearman_commands.settings.GEARMAN_SERVERS)
+            self.gearman_worker = self.worker_class(
+                exit_after_job=self.exit_after_job,
+                host_list=django_gearman_commands.settings.GEARMAN_SERVERS
+            )
             task_name = '{0}@{1}'.format(self.task_name, get_namespace()) if get_namespace() else self.task_name
             log.info('Registering gearman task: %s', self.task_name)
-            worker.register_task(task_name, self._invoke_job)
+            self.gearman_worker.register_task(task_name, self._invoke_job)
         except Exception:
             log.exception('Problem with registering gearman task')
             raise
 
-        worker.work()
+        self.gearman_worker.work()
 
     def _invoke_job(self, worker, job):
         """Invoke gearman job."""
