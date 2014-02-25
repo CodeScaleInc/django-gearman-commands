@@ -15,7 +15,7 @@ def read(fname):
 
 setup(
     name='django-gearman-commands',
-    version='0.6.0',
+    version='0.6.1',
     description='Django management commands for working with Gearman job server from Django framework',
     long_description=read('README.rst'),
     author=u'Jozef Ševčík',
@@ -41,6 +41,6 @@ setup(
         'Framework :: Django',
     ],
     dependency_links = [
-        'https://github.com/CodeScaleInc/python-gearman/tarball/master#egg=gearman-2.0.3.beta'
+        'https://github.com/CodeScaleInc/python-gearman/archive/2ed9d88941e31e3358a0b80787254d0c2cfaa78a.tar.gz#egg=gearman-2.0.3.beta'
     ]
 )
