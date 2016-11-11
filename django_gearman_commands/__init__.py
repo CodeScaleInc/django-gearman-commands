@@ -173,7 +173,7 @@ class GearmanServerInfo():
             self.tasks = [item for item in self.tasks if task_filter in item['task']]
 
             # filter workers by registered task name
-            self.workers = [item for item in self.workers if item['tasks'] and task_filter in [t for t in item['tasks']]]
+            self.workers = [item for item in self.workers if item['tasks'] and any(task_filter in t for t in item['tasks'])]
 
         # sort tasks by task name
         self.tasks = sorted(self.tasks, key=lambda item: item['task'])
