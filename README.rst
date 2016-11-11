@@ -380,4 +380,5 @@ Author: Jozef Ševčík, sevcik@codescale.net
 Contributors:
 
  * Vladimír Gorej (gorej@codescale.net)
+ * sleminov (https://github.com/sleminov)
 
